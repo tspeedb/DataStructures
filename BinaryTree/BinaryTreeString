@@ -1,0 +1,340 @@
+package lmu.cmsi281.assignments;
+
+import java.util.ArrayList;
+import java.util.Queue;
+import java.util.Stack;
+import java.util.concurrent.LinkedBlockingQueue;
+
+import org.w3c.dom.Node;
+
+
+class PreOrderTraversal {
+	
+	public void traverseIterative(BinaryTreeNodeString root, ArrayList<String> path) {
+		// Implement an iterative (using control structures e.g. loops) 
+		// pre order traversal
+		// Store the value of the nodes visited in path
+		if (root == null) {
+			return;
+		}
+		
+		Stack<BinaryTreeNodeString> stack = new Stack<BinaryTreeNodeString>();
+		stack.push(root);
+		
+		while(!stack.empty()) {
+			BinaryTreeNodeString node = stack.pop();
+			path.add(node.getData());
+			
+			if (node.getRight() != null) {
+				stack.push(node.getRight());
+			}
+			
+			if (node.getLeft() != null) {
+				stack.push(node.getLeft());
+			}
+		}
+		
+	}
+	
+	public void traverseRecursive(BinaryTreeNodeString root, ArrayList<String> path) {
+		// Implement a recursive pre order traversal
+		// Store the value of the nodes visited in path
+		if (root != null) {
+			path.add(root.getData());
+			traverseRecursive(root.getLeft(), path);
+			traverseRecursive(root.getRight(), path);
+		}
+	}
+}
+
+class InOrderTraversal {
+
+	public void traverseIterative(BinaryTreeNodeString root, ArrayList<String> path) {
+		// Implement an iterative (using control structures e.g. loops) 
+		// in order traversal
+		// Store the value of the nodes visited in path
+		if (root == null) {
+			return;
+		}
+		
+		Stack<BinaryTreeNodeString> stack = new Stack<BinaryTreeNodeString>();
+		BinaryTreeNodeString currentNode = root;
+		
+		while(!stack.empty() || currentNode != null) {
+			if (currentNode != null) {
+				stack.push(currentNode);
+				currentNode = currentNode.getLeft();
+			} else {
+				BinaryTreeNodeString node = stack.pop();
+				path.add(node.getData());
+				currentNode = node.getRight();
+			}
+ 		}
+		return;
+	}
+	
+	public void traverseRecursive(BinaryTreeNodeString root, ArrayList<String> path) {
+		// Implement a recursive in order traversal
+		// Store the value of the nodes visited in path
+		if (root != null) {
+			traverseRecursive(root.getLeft(), path);
+			path.add(root.getData());
+			traverseRecursive(root.getRight(), path);
+		}
+		
+	}
+}
+
+class PostOrderTraversal {
+
+	public void traverseIterative(BinaryTreeNodeString root, ArrayList<String> path) {
+		// Implement an iterative (using control structures e.g. loops) 
+		// post order traversal
+		// Store the value of the nodes visited in path
+		
+		//DO WE NEED ADDITIONAL CHILD METHODS TO MAKE THIS CLASS WORK???
+		
+		if (root == null) {
+			return;
+		}
+		
+		Stack<BinaryTreeNodeString> stack = new Stack<BinaryTreeNodeString>();
+		BinaryTreeNodeString currentNode = root;
+		
+		
+		while(root != null) {
+
+			if (currentNode != null) {
+				if(currentNode.getRight() != null) {
+					stack.push(currentNode.getRight());
+				}
+				stack.push(currentNode);
+				currentNode = currentNode.getLeft();
+				continue;
+			} 
+			if (stack.isEmpty()) {
+				return;
+			}
+			currentNode = stack.pop();
+			if(currentNode.getRight() != null && !stack.isEmpty() && currentNode.getRight() == stack.peek()) {
+				stack.pop();
+				stack.push(currentNode);
+				currentNode = currentNode.getRight();
+			}
+			else {
+				path.add(currentNode.getData());
+				currentNode = null;
+			}
+ 		}
+	}
+	
+	public void traverseRecursive(BinaryTreeNodeString root, ArrayList<String> path) {
+		// Implement an recursive order traversal
+		// Store the value of the nodes visited in path
+		if (root != null) {
+			traverseRecursive(root.getLeft(), path);
+			traverseRecursive(root.getRight(), path);
+			path.add(root.getData());
+		}
+		
+	}
+}
+
+class DepthFirstSearch {
+	
+	public Boolean searchIterative(BinaryTreeNodeString root, String value, ArrayList<String> path) {
+		// TODO: Implement an iterative (using control structures e.g. loops) 
+		// depth first search, if the value exists then return true, else false
+		// Store the value of the nodes visited in path, which should be the same nodes 
+		// as depth first traversal/pre order traversal if the value is missing
+		
+		Stack<BinaryTreeNodeString> stack = new Stack<BinaryTreeNodeString>();
+		stack.add(root);		
+		
+		
+		
+		while (!stack.isEmpty()) {
+			BinaryTreeNodeString node = stack.pop();
+			path.add(node.getData());
+			if(node.getData().equals(value)) {
+				return true;
+			}
+				
+			if(node.getRight() != null) {
+				stack.add(node.getRight());
+			}
+			if(node.getLeft() != null) {
+				stack.add(node.getLeft());
+			}
+//			stack.remove();
+			
+		}
+		
+		return false;
+	}
+	
+	
+	public Boolean searchRecursive(BinaryTreeNodeString root, String value, ArrayList<String> path) {
+		// Implement a recursive depth first search, 
+		// if the value exists then return true, else false
+		// Store the value of the nodes visited in path, which should be the same nodes 
+		// as depth first traversal/pre order traversal if the value is missing
+		
+		if (root == null) {
+			return false;
+		}
+		path.add(root.getData());
+		
+		if (root.getData().equals(value)) {
+			return true;
+		} 
+		return searchRecursive(root.getLeft(), value, path) || searchRecursive(root.getRight(), value, path);
+
+	}
+}
+
+class BreadthFirstSearch {
+	
+	public Boolean searchIterative(BinaryTreeNodeString root, String value, ArrayList<String> path) {
+		// Implement an iterative (using control structures e.g. loops) 
+		// breadth first search, if the value exists then return true, else false
+		// Store the value of the nodes visited in path, which should be the same nodes 
+		// as breadth first traversal if the value is missing
+		
+		Queue<BinaryTreeNodeString> queue = new LinkedBlockingQueue<BinaryTreeNodeString>();	
+		queue.add(root);
+		
+		
+		while (!queue.isEmpty()) {
+			BinaryTreeNodeString node = queue.peek();
+			path.add(node.getData());
+			if(node.getData().equals(value)) {
+				return true;
+			}
+				
+			if(node.getLeft() != null) {
+				queue.add(node.getLeft());
+			}
+			if(node.getRight() != null) {
+				queue.add(node.getRight());
+			}
+			queue.remove();
+			
+		}
+		
+		// Placeholder
+		return false;
+	}
+}
+
+public class BinaryTreeString {
+
+	public static void main(String[] args) {
+		BinaryTreeNodeString root = new BinaryTreeNodeString("A");
+		root.setLeft("B");
+		root.setRight("C");
+		root.getLeft().setLeft("D");
+		root.getLeft().setRight("E");
+		root.getRight().setLeft("F");
+		root.getRight().setRight("G");
+		root.getLeft().getLeft().setLeft("H");
+		root.getLeft().getLeft().setRight("I");
+		root.getLeft().getRight().setLeft("J");
+		
+		ArrayList<String> path = new ArrayList<String>();
+		
+		PreOrderTraversal pre = new PreOrderTraversal();
+		pre.traverseIterative(root, path);
+		System.out.println("Using iterative pre order traversal:");
+		// [A, B, D, H, I, E, J, C, F, G]	
+		System.out.println(path);
+		path.clear();
+		pre.traverseRecursive(root, path);
+		System.out.println("Using recursive pre order traversal:");
+		// [A, B, D, H, I, E, J, C, F, G]
+		System.out.println(path);
+		
+		InOrderTraversal in = new InOrderTraversal();
+		path.clear();
+		in.traverseIterative(root, path);
+		System.out.println("Using iterative in order traversal:");
+		// [H, D, I, B, J, E, A, F, C, G]
+		System.out.println(path);
+		path.clear();
+		in.traverseRecursive(root, path);
+		System.out.println("Using recursive in order traversal:");
+		// [H, D, I, B, J, E, A, F, C, G]
+		System.out.println(path);
+		
+
+		PostOrderTraversal post = new PostOrderTraversal();
+		path.clear();
+		post.traverseIterative(root, path);
+		System.out.println("Using iterative post order traversal:");
+		// [H, I, D, J, E, B, F, G, C, A]
+		System.out.println(path);
+		path.clear();
+		post.traverseRecursive(root, path);
+		System.out.println("Using recursive post order traversal:");
+		// [H, I, D, J, E, B, F, G, C, A]
+		System.out.println(path);
+		
+		Boolean found;
+		
+		BreadthFirstSearch bfs = new BreadthFirstSearch();
+		
+		System.out.println("Using iterative breadth first search:");
+		path.clear();
+		found = bfs.searchIterative(root, "H", path);
+		// Searching for H... Found=true
+		// path=[A, B, C, D, E, F, G, H]
+		System.out.println("Searching for H... " + "Found=" + found);
+		System.out.println("path=" + path);
+		
+		path.clear();
+		found = bfs.searchIterative(root, "G", path);
+		// Searching for G... Found=true
+		// path=[A, B, C, D, E, F, G]
+		System.out.println("Searching for G... " + "Found=" + found);	
+		System.out.println("path=" + path);
+		
+		DepthFirstSearch dfs = new DepthFirstSearch();
+		
+		System.out.println("Using iterative depth first search:");
+		path.clear();
+		found = dfs.searchIterative(root, "H", path);
+		// Searching for H... Found=true
+		// path=[A, B, D, H]
+		System.out.println("Searching for H... " + "Found=" + found);
+		System.out.println("path=" + path);
+		
+		path.clear();
+		found = dfs.searchIterative(root, "G", path);
+		// Searching for G... Found=true
+		// path=[A, B, D, H, I, E, J, C, F, G]	
+		System.out.println("Searching for G... " + "Found=" + found);
+		System.out.println("path=" + path);
+		
+		path.clear();
+		found = dfs.searchIterative(root, "Z", path);
+		// Searching for Z... Found=false
+		// path=[A, B, D, H, I, E, J, C, F, G]
+		System.out.println("Searching for Z... " + "Found=" + found);
+		System.out.println("path=" + path);
+		
+		System.out.println("Using recursive search:");
+		path.clear();
+		found = dfs.searchRecursive(root, "H", path);
+		// Searching for H... Found=true
+		//path=[A, B, D, H]
+		System.out.println("Searching for H... " + "Found=" + found);
+		System.out.println("path=" + path);
+		
+		path.clear();
+		found = dfs.searchRecursive(root, "G", path);
+		// Searching for G... Found=true
+		// path=[A, B, D, H, I, E, J, C, F, G]
+		System.out.println("Searching for G... " + "Found=" + found);
+		System.out.println("path=" + path);
+	}
+}
